@@ -255,7 +255,7 @@ class TM88IV(Network):
 
         binary_str = b''
         for c in txt:
-            is_emoji   = c in emoji.unicode_codes.UNICODE_EMOJI['en']
+            is_emoji   = emoji.is_emoji(c)
             is_jis0201 = c in self.jis_x_0201
             is_jis0208 = c in self.jis_x_0208
             is_jis0212 = c in self.jis_x_0212
