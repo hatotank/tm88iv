@@ -56,18 +56,18 @@ class TM88IV(Network):
         config : dict
             Configuration dictionary for paths and font settings
             - jis0201_file: Path to JIS0201 character set file
-            - jis0208_path: Path to JIS0208 character set file
-            - jis0212_path: Path to JIS0212 character set file
-            - jis0213_path: Path to JIS0213 character set file
-            - emoji_font: Path to emoji font file
+            - jis0208_file: Path to JIS0208 character set file
+            - jis0212_file: Path to JIS0212 character set file
+            - jis0213_file: Path to JIS0213-2004 character set file
+            - emoji_font_file: Path to emoji font file
             - emoji_font_size: Size of the emoji font
             - emoji_font_adjust_x: X-axis adjustment for emoji font rendering
             - emoji_font_adjust_y: Y-axis adjustment for emoji font rendering
-            - kanji_font: Path to kanji font file
+            - kanji_font_file: Path to kanji font file
             - kanji_font_size: Size of the kanji font
             - kanji_font_adjust_x: X-axis adjustment for kanji font rendering
             - kanji_font_adjust_y: Y-axis adjustment for kanji font rendering
-            - fallback_font: Path to fallback font file
+            - fallback_font_file: Path to fallback font file
             - fallback_font_size: Size of the fallback font
             - fallback_font_adjust_x: X-axis adjustment for fallback font rendering
             - fallback_font_adjust_y: Y-axis adjustment for fallback font rendering
@@ -340,7 +340,7 @@ class TM88IV(Network):
                 call_define = True
 
             if call_define:
-                # register gaiji
+                # Register gaiji
                 binary_str = self._DefineGaiji(gaiji=c, **params)
 
             self._raw(binary_str)
