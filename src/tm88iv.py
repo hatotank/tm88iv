@@ -269,12 +269,12 @@ class TM88IV(Network):
         return b''
 
 
-    def jptext2(self, txt, dw=False, dh=False, underline=False, wbreverse=False, bflg=False):
+    def jptext2(self, text, dw=False, dh=False, underline=False, wbreverse=False, bflg=False):
         """ 絵文字対応日本語出力
 
         Paramters
         ---------
-        txt : str
+        text : str
             テキスト
         dw : bool
             横倍拡大
@@ -306,41 +306,43 @@ class TM88IV(Network):
             self._raw(GS + b'B' + b'\x01') # GS B 反転
 
         binary_str = b''
-        for c in txt:
-            is_emoji   = emoji.is_emoji(c)
-            is_jis0201 = c in self.jis_x_0201
-            is_jis0208 = c in self.jis_x_0208
-            is_jis0212 = c in self.jis_x_0212
-            is_jis0213 = c in self.jis_x_0213
-
-            if is_emoji:
-                # https://docs.microsoft.com/en-us/typography/font-list/segoe-ui-emoji
-                binary_str = self._DefineGaiji(gaiji=c,
-                                               font=self.emoji_font_file,
-                                               size=self.emoji_font_size,
-                                               adjustX=self.emoji_font_adjust_x,
-                                               adjustY=self.emoji_font_adjust_y)
-
-            elif is_jis0212 or is_jis0213:
-                # https://fonts.google.com/noto/specimen/Noto+Sans+JP
-                binary_str = self._DefineGaiji(gaiji=c,
-                                               font=self.kanji_font_file,
-                                               size=self.kanji_font_size,
-                                               adjustX=self.kanji_font_adjust_x,
-                                               adjustY=self.kanji_font_adjust_y)
-
-            elif c.isascii() or is_jis0201 or is_jis0208:
+        for c in text:
+            if c.isascii() or c in self.jis_x_0201 or c in self.jis_x_0208:
                 # Built-in Kanji Font
                 binary_str = c.encode('cp932','ignore')
-
+                call_define = False
+            elif c in self.jis_x_0212 or c in self.jis_x_0213:
+                # Kanji Font
+                params = dict(
+                    font=self.kanji_font_file,
+                    size=self.kanji_font_size,
+                    adjustX=self.kanji_font_adjust_x,
+                    adjustY=self.kanji_font_adjust_y,
+                    asciiflg=False)
+                call_define = True
+            elif emoji.is_emoji(c):
+                # Emoji Font
+                params = dict(
+                    font=self.emoji_font_file,
+                    size=self.emoji_font_size,
+                    adjustX=self.emoji_font_adjust_x,
+                    adjustY=self.emoji_font_adjust_y,
+                    asciiflg=False)
+                call_define = True
             else:
-                # https://unifoundry.com/unifont/
-                binary_str = self._DefineGaiji(gaiji=c,
-                                               font=self.fallback_font_file,
-                                               size=self.fallback_font_size,
-                                               adjustX=self.fallback_font_adjust_x,
-                                               adjustY=self.fallback_font_adjust_y,
-                                               asciiflg=False)
+                # Fallback Font
+                params = dict(
+                    font=self.fallback_font_file,
+                    size=self.fallback_font_size,
+                    adjustX=self.fallback_font_adjust_x,
+                    adjustY=self.fallback_font_adjust_y,
+                    asciiflg=False)
+                call_define = True
+
+            if call_define:
+                # register gaiji
+                binary_str = self._DefineGaiji(gaiji=c, **params)
+
             self._raw(binary_str)
 
         if n != 0x00:
