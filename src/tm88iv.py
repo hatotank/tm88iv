@@ -53,39 +53,39 @@ class TM88IV(Network):
         timeout : int
             timeout in seconds for the socket-library
         config : dict
-            Configuration dictionary for paths and fonts
-            - jis0201_path: Path to JIS0201 character set file
+            Configuration dictionary for paths and font settings
+            - jis0201_file: Path to JIS0201 character set file
             - jis0208_path: Path to JIS0208 character set file
             - jis0212_path: Path to JIS0212 character set file
-            - jis0213_path: Path to JIS0213-2004 character set file
+            - jis0213_path: Path to JIS0213 character set file
             - emoji_font: Path to emoji font file
             - emoji_font_size: Size of the emoji font
-            - emoji_font_adjust_x: X-axis adjustment for emoji font
-            - emoji_font_adjust_y: Y-axis adjustment for emoji font
+            - emoji_font_adjust_x: X-axis adjustment for emoji font rendering
+            - emoji_font_adjust_y: Y-axis adjustment for emoji font rendering
             - kanji_font: Path to kanji font file
             - kanji_font_size: Size of the kanji font
-            - kanji_font_adjust_x: X-axis adjustment for kanji font
-            - kanji_font_adjust_y: Y-axis adjustment for kanji font
+            - kanji_font_adjust_x: X-axis adjustment for kanji font rendering
+            - kanji_font_adjust_y: Y-axis adjustment for kanji font rendering
             - fallback_font: Path to fallback font file
             - fallback_font_size: Size of the fallback font
-            - fallback_font_adjust_x: X-axis adjustment for fallback font
-            - fallback_font_adjust_y: Y-axis adjustment for fallback font
+            - fallback_font_adjust_x: X-axis adjustment for fallback font rendering
+            - fallback_font_adjust_y: Y-axis adjustment for fallback font rendering
         """
         config = config or {}
-        # Default paths for JIS character sets and fonts
-        self.jis0201_path = config.get('jis0201_path', "JIS0201.TXT")
-        self.jis0208_path = config.get('jis0208_path', "JIS0208.TXT")
-        self.jis0212_path = config.get('jis0212_path', "JIS0212.TXT")
-        self.jis0213_path = config.get('jis0213_path', "JIS0213-2004.TXT")
-        self.emoji_font = config.get('emoji_font', "NotoEmoji-Medium.ttf")
+        # Default configuration values
+        self.jis0201_file = config.get('jis0201_file', "JIS0201.TXT")
+        self.jis0208_file = config.get('jis0208_file', "JIS0208.TXT")
+        self.jis0212_file = config.get('jis0212_file', "JIS0212.TXT")
+        self.jis0213_file = config.get('jis0213_file', "JIS0213-2004.TXT")
+        self.emoji_font_file = config.get('emoji_font_file', "NotoEmoji-Medium.ttf")
         self.emoji_font_size = config.get('emoji_font_size', 20)
         self.emoji_font_adjust_x = config.get('emoji_font_adjust_x', 0)
         self.emoji_font_adjust_y = config.get('emoji_font_adjust_y', 0)
-        self.kanji_font = config.get('kanji_font', "NotoSansJP-Medium.otf")
+        self.kanji_font_file = config.get('kanji_font_file', "NotoSansJP-Medium.otf")
         self.kanji_font_size = config.get('kanji_font_size', 24)
         self.kanji_font_adjust_x = config.get('kanji_font_adjust_x', 0)
         self.kanji_font_adjust_y = config.get('kanji_font_adjust_y', -8)
-        self.fallback_font = config.get('fallback_font', "unifont_jp-16.0.03.otf")
+        self.fallback_font_file = config.get('fallback_font_file', "unifont_jp-16.0.03.otf")
         self.fallback_font_size = config.get('fallback_font_size', 24)
         self.fallback_font_adjust_x = config.get('fallback_font_adjust_x', 2)
         self.fallback_font_adjust_y = config.get('fallback_font_adjust_y', 0)
@@ -119,28 +119,28 @@ class TM88IV(Network):
         self.jis_x_0213 = []
     
         # http://unicode.org/Public/MAPPINGS/OBSOLETE/EASTASIA/JIS/JIS0201.TXT
-        with open(self.jis0201_path,"r") as f:
+        with open(self.jis0201_file,"r") as f:
           for row in f:
             if row[0] != '#':
               c = row.split("\t")[1]
               self.jis_x_0201.append(chr(int(c, 16)))
     
         # http://unicode.org/Public/MAPPINGS/OBSOLETE/EASTASIA/JIS/JIS0208.TXT
-        with open(self.jis0208_path,"r") as f:
+        with open(self.jis0208_file,"r") as f:
           for row in f:
             if row[0] != '#':
               c = row.split("\t")[2]
               self.jis_x_0208.append(chr(int(c, 16)))
 
         # http://unicode.org/Public/MAPPINGS/OBSOLETE/EASTASIA/JIS/JIS0212.TXT
-        with open(self.jis0212_path,"r") as f:
+        with open(self.jis0212_file,"r") as f:
           for row in f:
             if row[0] != '#':
               c = row.split("\t")[1]
               self.jis_x_0212.append(chr(int(c, 16)))
 
         # add hatotank
-        with open(self.jis0213_path,"r") as f:
+        with open(self.jis0213_file,"r") as f:
           for row in f:
             if row[0] != '#':
               c = row.split("\t")[1]
@@ -301,7 +301,7 @@ class TM88IV(Network):
             if is_emoji:
                 # https://docs.microsoft.com/en-us/typography/font-list/segoe-ui-emoji
                 binary_str = self._DefineGaiji(gaiji=c,
-                                               font=self.emoji_font,
+                                               font=self.emoji_font_file,
                                                size=self.emoji_font_size,
                                                adjustX=self.emoji_font_adjust_x,
                                                adjustY=self.emoji_font_adjust_y)
@@ -309,7 +309,7 @@ class TM88IV(Network):
             elif is_jis0212 or is_jis0213:
                 # https://fonts.google.com/noto/specimen/Noto+Sans+JP
                 binary_str = self._DefineGaiji(gaiji=c,
-                                               font=self.kanji_font,
+                                               font=self.kanji_font_file,
                                                size=self.kanji_font_size,
                                                adjustX=self.kanji_font_adjust_x,
                                                adjustY=self.kanji_font_adjust_y)
@@ -321,7 +321,7 @@ class TM88IV(Network):
             else:
                 # https://unifoundry.com/unifont/
                 binary_str = self._DefineGaiji(gaiji=c,
-                                               font=self.fallback_font,
+                                               font=self.fallback_font_file,
                                                size=self.fallback_font_size,
                                                adjustX=self.fallback_font_adjust_x,
                                                adjustY=self.fallback_font_adjust_y,
