@@ -16,6 +16,7 @@ from escpos.constants import *
 from PIL import Image, ImageDraw, ImageFont
 import collections
 import emoji
+import os
 
 class TM88IV(Network):
     """ TM88IV
@@ -89,6 +90,20 @@ class TM88IV(Network):
         self.fallback_font_size = config.get('fallback_font_size', 24)
         self.fallback_font_adjust_x = config.get('fallback_font_adjust_x', 2)
         self.fallback_font_adjust_y = config.get('fallback_font_adjust_y', 0)
+
+        # Check if required files exist
+        required_files = [
+            self.jis0201_file,
+            self.jis0208_file,
+            self.jis0212_file,
+            self.jis0213_file,
+            self.emoji_font_file,
+            self.kanji_font_file,
+            self.fallback_font_file
+        ]
+        for file in required_files:
+            if not os.path.exists(file):
+                raise FileNotFoundError(f"Required file not found: {file}")
 
         super().__init__(host, port, timeout, *args, **kwargs)
 
