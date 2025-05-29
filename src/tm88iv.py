@@ -74,18 +74,35 @@ class TM88IV(Network):
         """
         config = config or {}
         # Default configuration values
+        # http://unicode.org/Public/MAPPINGS/OBSOLETE/EASTASIA/JIS/JIS0201.TXT
         self.jis0201_file = config.get('jis0201_file', "JIS0201.TXT")
+        # http://unicode.org/Public/MAPPINGS/OBSOLETE/EASTASIA/JIS/JIS0208.TXT
         self.jis0208_file = config.get('jis0208_file', "JIS0208.TXT")
+        # http://unicode.org/Public/MAPPINGS/OBSOLETE/EASTASIA/JIS/JIS0212.TXT
         self.jis0212_file = config.get('jis0212_file', "JIS0212.TXT")
+        # https://raw.githubusercontent.com/hatotank/WPT/refs/heads/main/JIS0213-2004.TXT
         self.jis0213_file = config.get('jis0213_file', "JIS0213-2004.TXT")
-        self.emoji_font_file = config.get('emoji_font_file', "NotoEmoji-Medium.ttf")
+        # Recommended emoji font1: Segoe UI Emoji font (emoji_font_adjust_y: 4) *Windows only
+        # https://docs.microsoft.com/en-us/typography/font-list/segoe-ui-emoji
+        # Recommended emoji font2: Noto Emoji font
+        # https://fonts.google.com/noto/specimen/Noto+Emoji *Manual download required
+        # Recommended emoji font3: OpenMoji font
+        # https://openmoji.org/
+        # https://github.com/hfg-gmuend/openmoji/releases/download/15.1.0/openmoji-font.zip
+        self.emoji_font_file = config.get('emoji_font_file', "OpenMoji-black-glyf.ttf")
         self.emoji_font_size = config.get('emoji_font_size', 20)
         self.emoji_font_adjust_x = config.get('emoji_font_adjust_x', 0)
         self.emoji_font_adjust_y = config.get('emoji_font_adjust_y', 0)
+        # Recommended kanji font for Japanese characters: Noto CJK fonts
+        # https://github.com/notofonts/noto-cjk
+        # https://github.com/notofonts/noto-cjk/releases/download/Sans2.004/16_NotoSansJP.zip
         self.kanji_font_file = config.get('kanji_font_file', "NotoSansJP-Medium.otf")
         self.kanji_font_size = config.get('kanji_font_size', 24)
         self.kanji_font_adjust_x = config.get('kanji_font_adjust_x', 0)
         self.kanji_font_adjust_y = config.get('kanji_font_adjust_y', -8)
+        # Fallback font for characters not covered by the above fonts
+        # Recommended fallback font: Unifont
+        # https://unifoundry.com/pub/unifont/unifont-16.0.03/font-builds/unifont_jp-16.0.03.otf
         self.fallback_font_file = config.get('fallback_font_file', "unifont_jp-16.0.03.otf")
         self.fallback_font_size = config.get('fallback_font_size', 24)
         self.fallback_font_adjust_x = config.get('fallback_font_adjust_x', 2)
@@ -133,28 +150,28 @@ class TM88IV(Network):
         self.jis_x_0212 = []
         self.jis_x_0213 = []
     
-        # http://unicode.org/Public/MAPPINGS/OBSOLETE/EASTASIA/JIS/JIS0201.TXT
+        # JIS X 0201
         with open(self.jis0201_file,"r") as f:
           for row in f:
             if row[0] != '#':
               c = row.split("\t")[1]
               self.jis_x_0201.append(chr(int(c, 16)))
-    
-        # http://unicode.org/Public/MAPPINGS/OBSOLETE/EASTASIA/JIS/JIS0208.TXT
+
+        # JIS X 0208
         with open(self.jis0208_file,"r") as f:
           for row in f:
             if row[0] != '#':
               c = row.split("\t")[2]
               self.jis_x_0208.append(chr(int(c, 16)))
 
-        # http://unicode.org/Public/MAPPINGS/OBSOLETE/EASTASIA/JIS/JIS0212.TXT
+        # JIS X 0212
         with open(self.jis0212_file,"r") as f:
           for row in f:
             if row[0] != '#':
               c = row.split("\t")[1]
               self.jis_x_0212.append(chr(int(c, 16)))
 
-        # add hatotank
+        # JIS X 0213-2004
         with open(self.jis0213_file,"r") as f:
           for row in f:
             if row[0] != '#':
