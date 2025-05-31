@@ -75,13 +75,13 @@ class TM88IV(Network):
         config = config or {}
         # Default configuration values
         # http://unicode.org/Public/MAPPINGS/OBSOLETE/EASTASIA/JIS/JIS0201.TXT
-        self.jis0201_file = config.get('jis0201_file', "JIS0201.TXT")
+        self._jis0201_file = config.get('jis0201_file', "JIS0201.TXT")
         # http://unicode.org/Public/MAPPINGS/OBSOLETE/EASTASIA/JIS/JIS0208.TXT
-        self.jis0208_file = config.get('jis0208_file', "JIS0208.TXT")
+        self._jis0208_file = config.get('jis0208_file', "JIS0208.TXT")
         # http://unicode.org/Public/MAPPINGS/OBSOLETE/EASTASIA/JIS/JIS0212.TXT
-        self.jis0212_file = config.get('jis0212_file', "JIS0212.TXT")
+        self._jis0212_file = config.get('jis0212_file', "JIS0212.TXT")
         # https://raw.githubusercontent.com/hatotank/WPT/refs/heads/main/JIS0213-2004.TXT
-        self.jis0213_file = config.get('jis0213_file', "JIS0213-2004.TXT")
+        self._jis0213_file = config.get('jis0213_file', "JIS0213-2004.TXT")
         # Recommended emoji font1: Segoe UI Emoji font (emoji_font_adjust_y: 4) *Windows only
         # https://docs.microsoft.com/en-us/typography/font-list/segoe-ui-emoji
         # Recommended emoji font2: Noto Emoji font
@@ -89,34 +89,34 @@ class TM88IV(Network):
         # Recommended emoji font3: OpenMoji font
         # https://openmoji.org/
         # https://github.com/hfg-gmuend/openmoji/releases/download/15.1.0/openmoji-font.zip
-        self.emoji_font_file = config.get('emoji_font_file', "OpenMoji-black-glyf.ttf")
-        self.emoji_font_size = config.get('emoji_font_size', 20)
-        self.emoji_font_adjust_x = config.get('emoji_font_adjust_x', 0)
-        self.emoji_font_adjust_y = config.get('emoji_font_adjust_y', 0)
+        self._emoji_font_file = config.get('emoji_font_file', "OpenMoji-black-glyf.ttf")
+        self._emoji_font_size = config.get('emoji_font_size', 20)
+        self._emoji_font_adjust_x = config.get('emoji_font_adjust_x', 0)
+        self._emoji_font_adjust_y = config.get('emoji_font_adjust_y', 0)
         # Recommended kanji font for Japanese characters: Noto CJK fonts
         # https://github.com/notofonts/noto-cjk
         # https://github.com/notofonts/noto-cjk/releases/download/Sans2.004/16_NotoSansJP.zip
-        self.kanji_font_file = config.get('kanji_font_file', "NotoSansJP-Medium.otf")
-        self.kanji_font_size = config.get('kanji_font_size', 24)
-        self.kanji_font_adjust_x = config.get('kanji_font_adjust_x', 0)
-        self.kanji_font_adjust_y = config.get('kanji_font_adjust_y', -8)
+        self._kanji_font_file = config.get('kanji_font_file', "NotoSansJP-Medium.otf")
+        self._kanji_font_size = config.get('kanji_font_size', 24)
+        self._kanji_font_adjust_x = config.get('kanji_font_adjust_x', 0)
+        self._kanji_font_adjust_y = config.get('kanji_font_adjust_y', -8)
         # Fallback font for characters not covered by the above fonts
         # Recommended fallback font: Unifont
         # https://unifoundry.com/pub/unifont/unifont-16.0.03/font-builds/unifont_jp-16.0.03.otf
-        self.fallback_font_file = config.get('fallback_font_file', "unifont_jp-16.0.03.otf")
-        self.fallback_font_size = config.get('fallback_font_size', 24)
-        self.fallback_font_adjust_x = config.get('fallback_font_adjust_x', 2)
-        self.fallback_font_adjust_y = config.get('fallback_font_adjust_y', 0)
+        self._fallback_font_file = config.get('fallback_font_file', "unifont_jp-16.0.03.otf")
+        self._fallback_font_size = config.get('fallback_font_size', 24)
+        self._fallback_font_adjust_x = config.get('fallback_font_adjust_x', 2)
+        self._fallback_font_adjust_y = config.get('fallback_font_adjust_y', 0)
 
         # Check if required files exist
         required_files = [
-            self.jis0201_file,
-            self.jis0208_file,
-            self.jis0212_file,
-            self.jis0213_file,
-            self.emoji_font_file,
-            self.kanji_font_file,
-            self.fallback_font_file
+            self._jis0201_file,
+            self._jis0208_file,
+            self._jis0212_file,
+            self._jis0213_file,
+            self._emoji_font_file,
+            self._kanji_font_file,
+            self._fallback_font_file
         ]
         for file in required_files:
             if not os.path.exists(file):
@@ -124,17 +124,17 @@ class TM88IV(Network):
 
         super().__init__(host, port, timeout, *args, **kwargs)
 
-        self.user_areas  = collections.OrderedDict()
-        self.gaiji_areas = collections.OrderedDict()
+        self._user_areas  = collections.OrderedDict()
+        self._gaiji_areas = collections.OrderedDict()
 
         for area in self.USER_AREAS_ASCII:
-            self.user_areas[area] = ''
+            self._user_areas[area] = ''
 
         for area in self.USER_KANJI_AREAS_SJIS:
-            self.gaiji_areas[area] = ''
+            self._gaiji_areas[area] = ''
         
         self._font_cache = {}
-        self.c1 = b'\xec' # 外字の文字コードの第1バイト(Shift JIS)
+        self._c1 = b'\xec' # 外字の文字コードの第1バイト(Shift JIS)
 
         self._raw(ESC + b't' + b'\x01') # ESC t 文字コードテーブルの選択(Page1 カタカナ)
         self._raw(FS + b'&')            # FS & 漢字モード指定
@@ -146,38 +146,38 @@ class TM88IV(Network):
     # https://github.com/nakamura001/JIS_CharacterSet ※チルダがオーバーラインになっている
     def _load_jis_character_set(self):
         """ JIS漢字コードをロード """
-        self.jis_x_0201 = []
-        self.jis_x_0208 = []
-        self.jis_x_0212 = []
-        self.jis_x_0213 = []
+        self._jis_x_0201 = []
+        self._jis_x_0208 = []
+        self._jis_x_0212 = []
+        self._jis_x_0213 = []
     
         # JIS X 0201
-        with open(self.jis0201_file,"r") as f:
+        with open(self._jis0201_file,"r") as f:
           for row in f:
             if row[0] != '#':
               c = row.split("\t")[1]
-              self.jis_x_0201.append(chr(int(c, 16)))
+              self._jis_x_0201.append(chr(int(c, 16)))
 
         # JIS X 0208
-        with open(self.jis0208_file,"r") as f:
+        with open(self._jis0208_file,"r") as f:
           for row in f:
             if row[0] != '#':
               c = row.split("\t")[2]
-              self.jis_x_0208.append(chr(int(c, 16)))
+              self._jis_x_0208.append(chr(int(c, 16)))
 
         # JIS X 0212
-        with open(self.jis0212_file,"r") as f:
+        with open(self._jis0212_file,"r") as f:
           for row in f:
             if row[0] != '#':
               c = row.split("\t")[1]
-              self.jis_x_0212.append(chr(int(c, 16)))
+              self._jis_x_0212.append(chr(int(c, 16)))
 
         # JIS X 0213-2004
-        with open(self.jis0213_file,"r") as f:
+        with open(self._jis0213_file,"r") as f:
           for row in f:
             if row[0] != '#':
               c = row.split("\t")[1]
-              self.jis_x_0213.append(chr(int(c, 16)))
+              self._jis_x_0213.append(chr(int(c, 16)))
 
 
     def _get_font(self, font_path, size, encoding='unic'):
@@ -249,7 +249,7 @@ class TM88IV(Network):
             self._raw(ESC + b'&' + b'\x03' + c2 + c2) # ESC & ダウンロード文字の定義
             self._raw(b'\x0c')
         else:
-            self._raw(FS + b'2' + self.c1 + c2) # FS 2 外字の定義
+            self._raw(FS + b'2' + self._c1 + c2) # FS 2 外字の定義
 
         for byte in byte_array:
             self._raw(byte)
@@ -284,31 +284,31 @@ class TM88IV(Network):
         """
         # ダウンロード文字
         if asciiflg:
-            for k, v in self.user_areas.items():
+            for k, v in self._user_areas.items():
                 if v == gaiji:
-                    self.user_areas[k] = self.user_areas.pop(k) # 削除して追加
+                    self._user_areas[k] = self._user_areas.pop(k) # 削除して追加
                     return ESC + b'%' +' \x01' + k + ESC + b'%' + b'\x00' # ダウンロード文字セットの指定・解除
 
-            for k, v in self.user_areas.items():
-                self.user_areas.pop(k)
-                self.user_areas[k] = gaiji
+            for k, v in self._user_areas.items():
+                self._user_areas.pop(k)
+                self._user_areas[k] = gaiji
 
                 self._escpos_register_gaiji(k,gaiji,font,size,adjustX,adjustY,asciiflg) # 定義または再定義
                 return ESC + b'%' + b'\x01' + k + ESC + b'%' + b'\x00'    # ダウンロード文字セットの指定・解除
 
         # 外字
         else:
-            for k, v in self.gaiji_areas.items():
+            for k, v in self._gaiji_areas.items():
                 if v == gaiji:
-                    self.gaiji_areas[k] = self.gaiji_areas.pop(k) # 削除して追加
-                    return self.c1 + k
+                    self._gaiji_areas[k] = self._gaiji_areas.pop(k) # 削除して追加
+                    return self._c1 + k
 
-            for k, v in self.gaiji_areas.items():
-                self.gaiji_areas.pop(k)
-                self.gaiji_areas[k] = gaiji
+            for k, v in self._gaiji_areas.items():
+                self._gaiji_areas.pop(k)
+                self._gaiji_areas[k] = gaiji
 
                 self._escpos_register_gaiji(k,gaiji,font,size,adjustX,adjustY,asciiflg) # 定義または再定義
-                return self.c1 + k
+                return self._c1 + k
 
         return b''
 
@@ -352,35 +352,35 @@ class TM88IV(Network):
         binary_str = b''
         call_define = False
         for c in text:
-            if c.isascii() or c in self.jis_x_0201 or c in self.jis_x_0208:
+            if c.isascii() or c in self._jis_x_0201 or c in self._jis_x_0208:
                 # Built-in Kanji Font
                 binary_str = c.encode('cp932','ignore')
                 call_define = False
-            elif c in self.jis_x_0212 or c in self.jis_x_0213:
+            elif c in self._jis_x_0212 or c in self._jis_x_0213:
                 # Kanji Font
                 params = dict(
-                    font=self.kanji_font_file,
-                    size=self.kanji_font_size,
-                    adjustX=self.kanji_font_adjust_x,
-                    adjustY=self.kanji_font_adjust_y,
+                    font=self._kanji_font_file,
+                    size=self._kanji_font_size,
+                    adjustX=self._kanji_font_adjust_x,
+                    adjustY=self._kanji_font_adjust_y,
                     asciiflg=False)
                 call_define = True
             elif emoji.is_emoji(c):
                 # Emoji Font
                 params = dict(
-                    font=self.emoji_font_file,
-                    size=self.emoji_font_size,
-                    adjustX=self.emoji_font_adjust_x,
-                    adjustY=self.emoji_font_adjust_y,
+                    font=self._emoji_font_file,
+                    size=self._emoji_font_size,
+                    adjustX=self._emoji_font_adjust_x,
+                    adjustY=self._emoji_font_adjust_y,
                     asciiflg=False)
                 call_define = True
             else:
                 # Fallback Font
                 params = dict(
-                    font=self.fallback_font_file,
-                    size=self.fallback_font_size,
-                    adjustX=self.fallback_font_adjust_x,
-                    adjustY=self.fallback_font_adjust_y,
+                    font=self._fallback_font_file,
+                    size=self._fallback_font_size,
+                    adjustX=self._fallback_font_adjust_x,
+                    adjustY=self._fallback_font_adjust_y,
                     asciiflg=False)
                 call_define = True
 
