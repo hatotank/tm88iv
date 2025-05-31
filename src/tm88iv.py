@@ -289,15 +289,15 @@ class TM88IV(Network):
     def jptext2(self, text, dw=False, dh=False, underline=False, wbreverse=False, bflg=False):
         """ 絵文字対応日本語出力
 
-        Paramters
-        ---------
+        Parameters
+        ----------
         text : str
             テキスト
         dw : bool
             横倍拡大
         dh : bool
             縦倍拡大
-        unlderline : bool
+        underline : bool
             アンダーライン(1ドット幅)
         wbreverse : bool
             白黒反転印字
@@ -323,6 +323,7 @@ class TM88IV(Network):
             self._raw(GS + b'B' + b'\x01') # GS B 反転
 
         binary_str = b''
+        call_define = False
         for c in text:
             if c.isascii() or c in self.jis_x_0201 or c in self.jis_x_0208:
                 # Built-in Kanji Font
