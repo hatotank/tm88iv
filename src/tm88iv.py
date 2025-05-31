@@ -139,11 +139,11 @@ class TM88IV(Network):
         self._raw(FS + b'&')            # FS & 漢字モード指定
         self._raw(FS + b'C' + b'\x01')  # FS C 漢字コード体系の選択(Shitf JIS)
 
-        self._LoadJISCharacterSet()
+        self._load_jis_character_set()
 
 
     # https://github.com/nakamura001/JIS_CharacterSet ※チルダがオーバーラインになっている
-    def _LoadJISCharacterSet(self):
+    def _load_jis_character_set(self):
         """ JIS漢字コードをロード """
         self.jis_x_0201 = []
         self.jis_x_0208 = []
@@ -179,7 +179,7 @@ class TM88IV(Network):
               self.jis_x_0213.append(chr(int(c, 16)))
 
 
-    def _EscposRegisterGaiji(self, c2, gaiji, font, size, adjustX, adjustY, asciiflg):
+    def _escpos_register_gaiji(self, c2, gaiji, font, size, adjustX, adjustY, asciiflg):
         """ 外字登録(ESC/POS)
 
         Parameters
@@ -232,7 +232,7 @@ class TM88IV(Network):
             self._raw(byte)
 
 
-    def _DefineGaiji(self, gaiji, font, size=18, adjustX=0, adjustY=0, asciiflg=False):
+    def _define_gaiji(self, gaiji, font, size=18, adjustX=0, adjustY=0, asciiflg=False):
         """ 外字登録
 
         Parameters
@@ -249,7 +249,6 @@ class TM88IV(Network):
             フォント描画位置調節y軸(ピクセル)
         asciiflg : bool
             ダウンロード文字定義フラグ
-        
         Returns
         -------
         out : byte
@@ -266,7 +265,7 @@ class TM88IV(Network):
                 self.user_areas.pop(k)
                 self.user_areas[k] = gaiji
 
-                self._EscposRegisterGaiji(k,gaiji,font,size,adjustX,adjustY,asciiflg) # 定義または再定義
+                self._escpos_register_gaiji(k,gaiji,font,size,adjustX,adjustY,asciiflg) # 定義または再定義
                 return ESC + b'%' + b'\x01' + k + ESC + b'%' + b'\x00'    # ダウンロード文字セットの指定・解除
 
         # 外字
@@ -280,7 +279,7 @@ class TM88IV(Network):
                 self.gaiji_areas.pop(k)
                 self.gaiji_areas[k] = gaiji
 
-                self._EscposRegisterGaiji(k,gaiji,font,size,adjustX,adjustY,asciiflg) # 定義または再定義
+                self._escpos_register_gaiji(k,gaiji,font,size,adjustX,adjustY,asciiflg) # 定義または再定義
                 return self.c1 + k
 
         return b''
@@ -359,7 +358,7 @@ class TM88IV(Network):
 
             if call_define:
                 # Register gaiji
-                binary_str = self._DefineGaiji(gaiji=c, **params)
+                binary_str = self._define_gaiji(gaiji=c, **params)
 
             self._raw(binary_str)
 
