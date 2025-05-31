@@ -132,7 +132,8 @@ class TM88IV(Network):
 
         for area in self.USER_KANJI_AREAS_SJIS:
             self.gaiji_areas[area] = ''
-
+        
+        self._font_cache = {}
         self.c1 = b'\xec' # 外字の文字コードの第1バイト(Shift JIS)
 
         self._raw(ESC + b't' + b'\x01') # ESC t 文字コードテーブルの選択(Page1 カタカナ)
@@ -179,6 +180,28 @@ class TM88IV(Network):
               self.jis_x_0213.append(chr(int(c, 16)))
 
 
+    def _get_font(self, font_path, size, encoding='unic'):
+        """ フォントオブジェクトをキャッシュから取得、または新規作成して返却
+        
+        パラメータ
+        ----------
+        font_path : str
+            フォントファイルのパス
+        size : int
+            フォントサイズ
+        encoding : str
+            フォントのエンコーディング（デフォルトは'unic'）
+        戻り値
+        -------
+        font : ImageFont
+            フォントオブジェクト
+        """
+        key = (font_path, size, encoding)
+        if key not in self._font_cache:
+            self._font_cache[key] = ImageFont.truetype(font_path, size, encoding=encoding)
+        return self._font_cache[key]
+
+
     def _escpos_register_gaiji(self, c2, gaiji, font, size, adjustX, adjustY, asciiflg):
         """ 外字登録(ESC/POS)
 
@@ -204,7 +227,7 @@ class TM88IV(Network):
         else:
             img = Image.new('RGB', (24,24), (255,255,255))
         draw = ImageDraw.Draw(img)
-        f = ImageFont.truetype(font, size, encoding='unic')
+        f = self._get_font(font, size, encoding='unic')
         draw.text((adjustX,adjustY), gaiji, fill=(0,0,0), font=f)
         img = img.convert('1')
 
