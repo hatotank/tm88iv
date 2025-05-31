@@ -1,16 +1,3 @@
-""" Japanese + Emoji support for TM88IV(Japanese model)
-
-Need fonts and something...
-
-References
-----------
-python-escpos - Python library to manipulate ESC/POS Printers
-    https://github.com/python-escpos/python-escpos
-python-escpos for Japanese
-    https://github.com/lrks/python-escpos
-python-escpos japenese wrapper
-    https://github.com/iakyi/python-escpos-jp
-"""
 from escpos.printer import Network
 from escpos.constants import *
 from PIL import Image, ImageDraw, ImageFont
@@ -19,11 +6,33 @@ import emoji
 import os
 
 class TM88IV(Network):
-    """ TM88IV
-
-    Inherits from python-escpos Network class.
     """
+    TM88IV: 日本語・絵文字対応 ESC/POS サーマルプリンタ用クラス
 
+    Epson TM88IV（日本語モデル）などのESC/POSプリンタで、日本語（JIS各種）・絵文字を柔軟に印字できるラッパークラスです。
+    JISデータファイルや各種フォント（Noto CJK、OpenMoji、unifont）を利用し、文字種ごとに適切なフォントを選択し外字登録し印字します。
+    ※使用には各種JISデータ、フォントが必要です。
+
+    主な用途
+    --------
+    - 日本語・絵文字混在テキストの印刷
+
+    継承
+    ----
+    python-escpos の Network クラスを継承
+
+    依存ライブラリ
+    --------------
+    - python-escpos
+    - Pillow
+    - emoji
+
+    参考
+    ----
+    - https://github.com/python-escpos/python-escpos
+    - https://github.com/lrks/python-escpos
+    - https://github.com/iakyi/python-escpos-jp
+    """
     USER_AREAS_ASCII = [
         b'\x20',b'\x21',b'\x22',b'\x23',b'\x24',b'\x25',b'\x26',b'\x27',b'\x28',b'\x29',b'\x2a',b'\x2b',b'\x2c',b'\x2d',b'\x2e',b'\x2f',
         b'\x30',b'\x31',b'\x32',b'\x33',b'\x34',b'\x35',b'\x36',b'\x37',b'\x38',b'\x39',b'\x3a',b'\x3b',b'\x3c',b'\x3d',b'\x3e',b'\x3f',
@@ -44,6 +53,8 @@ class TM88IV(Network):
 
     def __init__(self, host, port=9100, timeout=60, config=None, *args, **kwargs):
         """
+        TM88IVプリンタクラスのインスタンスを初期化します。
+        必要なJISデータファイルやフォントファイルの存在をチェックし、印字に必要な各種設定を行います。
 
         Parameters
         ----------
@@ -145,7 +156,9 @@ class TM88IV(Network):
 
     # https://github.com/nakamura001/JIS_CharacterSet ※チルダがオーバーラインになっている
     def _load_jis_character_set(self):
-        """ JIS漢字コードをロード """
+        """
+        JIS漢字コードをロード
+        """
         self._jis_x_0201 = []
         self._jis_x_0208 = []
         self._jis_x_0212 = []
@@ -181,7 +194,8 @@ class TM88IV(Network):
 
 
     def _get_font(self, font_path, size, encoding='unic'):
-        """ フォントオブジェクトをキャッシュから取得、または新規作成して返却
+        """
+        フォントオブジェクトをキャッシュから取得、または新規作成して返却
         
         パラメータ
         ----------
@@ -203,7 +217,8 @@ class TM88IV(Network):
 
 
     def _escpos_register_gaiji(self, c2, gaiji, font, size, adjustX, adjustY, asciiflg):
-        """ 外字登録(ESC/POS)
+        """
+        外字登録(ESC/POS)
 
         Parameters
         ----------
@@ -256,7 +271,8 @@ class TM88IV(Network):
 
 
     def _define_gaiji(self, gaiji, font, size=18, adjustX=0, adjustY=0, asciiflg=False):
-        """ 外字登録
+        """
+        外字登録
 
         Parameters
         ----------
@@ -272,10 +288,12 @@ class TM88IV(Network):
             フォント描画位置調節y軸(ピクセル)
         asciiflg : bool
             ダウンロード文字定義フラグ
+
         Returns
         -------
         out : byte
             外字文字
+
         Notes
         -----
         ユーザー定義外字領域（user_areas, gaiji_areas）は登録数に上限があります。
@@ -314,7 +332,8 @@ class TM88IV(Network):
 
 
     def jptext2(self, text, dw=False, dh=False, underline=False, wbreverse=False, bflg=False):
-        """ 絵文字対応日本語出力
+        """
+        絵文字対応日本語出力
 
         Parameters
         ----------
