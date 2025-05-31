@@ -96,7 +96,6 @@ def prepare_fonts_and_data_downlowd():
     print("[完了] すべてのファイルが準備されました。")
 
 
-@pytest.mark.skip()
 @pytest.mark.parametrize("ip_address", ["192.168.10.21"])
 @pytest.mark.parametrize("emoji_font_type", ["font3"]) # font1 / font2 / font3
 def test_print1(ip_address, emoji_font_type):
@@ -155,7 +154,6 @@ def test_print1(ip_address, emoji_font_type):
     p.close()
 
 
-#@pytest.mark.skip()
 @pytest.mark.parametrize("ip_address", ["192.168.10.21"])
 def test_print2(ip_address):
     """
@@ -191,7 +189,6 @@ def test_print2(ip_address):
     p.close()
 
 
-@pytest.mark.skip()
 @pytest.mark.parametrize("ip_address", ["192.168.10.21"])
 @pytest.mark.parametrize("missing_key", [
     "jis0201_file",
