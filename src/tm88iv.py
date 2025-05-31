@@ -276,6 +276,11 @@ class TM88IV(Network):
         -------
         out : byte
             外字文字
+        Notes
+        -----
+        ユーザー定義外字領域（user_areas, gaiji_areas）は登録数に上限があります。
+        領域が満杯の場合は、最も古い外字を削除し、新しい外字で上書き登録します（LRU方式）。
+        上限数は USER_AREAS_ASCII, USER_KANJI_AREAS_SJIS の要素数に依存します。
         """
         # ダウンロード文字
         if asciiflg:
