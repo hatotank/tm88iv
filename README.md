@@ -7,6 +7,8 @@ This repository contains the `TM88IV` class, originally part of the [WPT](https:
 - Support for JIS character sets (JIS0212, JIS0213)
 - External character (user-defined character) registration (ESC/POS, LRU management)
 
+![Print Sample](tm88iv_print_sample.jpg)
+
 ## Required Python Packages
 
 - python-escpos

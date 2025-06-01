@@ -9,6 +9,8 @@
 - JIS文字セット（JIS0212, JIS0213）対応
 - 上記内容にて外字機能を使用
 
+![印字サンプル](tm88iv_print_sample.jpg)
+
 ## 必要なPythonパッケージ
 
 - python-escpos
