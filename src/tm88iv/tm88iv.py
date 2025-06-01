@@ -1,9 +1,10 @@
-from escpos.printer import Network
-from escpos.constants import *
-from PIL import Image, ImageDraw, ImageFont
 import collections
-import emoji
 import os
+
+import emoji
+from escpos.constants import *
+from escpos.printer import Network
+from PIL import Image, ImageDraw, ImageFont
 
 class TM88IV(Network):
     """
