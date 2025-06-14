@@ -102,23 +102,23 @@ class TM88IV(Network):
         # https://openmoji.org/
         # https://github.com/hfg-gmuend/openmoji/releases/download/15.1.0/openmoji-font.zip
         self._emoji_font_file = config.get('emoji_font_file', "OpenMoji-black-glyf.ttf")
-        self._emoji_font_size = config.get('emoji_font_size', 20)
-        self._emoji_font_adjust_x = config.get('emoji_font_adjust_x', 0)
-        self._emoji_font_adjust_y = config.get('emoji_font_adjust_y', 0)
+        self._emoji_font_size = int(config.get('emoji_font_size', 20))
+        self._emoji_font_adjust_x = int(config.get('emoji_font_adjust_x', 0))
+        self._emoji_font_adjust_y = int(config.get('emoji_font_adjust_y', 0))
         # Recommended kanji font for Japanese characters: Noto CJK fonts
         # https://github.com/notofonts/noto-cjk
         # https://github.com/notofonts/noto-cjk/releases/download/Sans2.004/16_NotoSansJP.zip
         self._kanji_font_file = config.get('kanji_font_file', "NotoSansJP-Medium.otf")
-        self._kanji_font_size = config.get('kanji_font_size', 24)
-        self._kanji_font_adjust_x = config.get('kanji_font_adjust_x', 0)
-        self._kanji_font_adjust_y = config.get('kanji_font_adjust_y', -8)
+        self._kanji_font_size = int(config.get('kanji_font_size', 24))
+        self._kanji_font_adjust_x = int(config.get('kanji_font_adjust_x', 0))
+        self._kanji_font_adjust_y = int(config.get('kanji_font_adjust_y', -8))
         # Fallback font for characters not covered by the above fonts
         # Recommended fallback font: Unifont
         # https://unifoundry.com/pub/unifont/unifont-16.0.03/font-builds/unifont_jp-16.0.03.otf
         self._fallback_font_file = config.get('fallback_font_file', "unifont_jp-16.0.03.otf")
-        self._fallback_font_size = config.get('fallback_font_size', 24)
-        self._fallback_font_adjust_x = config.get('fallback_font_adjust_x', 2)
-        self._fallback_font_adjust_y = config.get('fallback_font_adjust_y', 0)
+        self._fallback_font_size = int(config.get('fallback_font_size', 24))
+        self._fallback_font_adjust_x = int(config.get('fallback_font_adjust_x', 2))
+        self._fallback_font_adjust_y = int(config.get('fallback_font_adjust_y', 0))
 
         # Check if required files exist
         required_files = [
